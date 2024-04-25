@@ -31,35 +31,31 @@ def test(client, message):
 
 
 def download_video(client, message, url, audio=False, format_id="mp4"):
-    url_info = urlparse(url)
-    if url_info.scheme:
-        if url_info.netloc in ['www.youtube.com', 'youtu.be', 'youtube.com', 'youtu.be']:
-            if not youtube_url_validation(url):
-                client.send_message(message.chat.id, 'Invalid URL')
-                return
-
-        def progress(current, total):
-            if current < total:
+    # Your existing code...
+    
+        def progress(d, message, msg):  # Add message and msg as arguments
+            if d['status'] == 'downloading':
                 try:
                     update = False
 
-                    if last_edited.get(f"{message.chat.id}-{message.message_id}"):
-                        if (datetime.datetime.now() - last_edited[f"{message.chat.id}-{message.message_id}"]).total_seconds() >= 5:
+                    if last_edited.get(f"{message.chat.id}-{msg.message_id}"):
+                        if (datetime.datetime.now() - last_edited[f"{message.chat.id}-{msg.message_id}"]).total_seconds() >= 5:
                             update = True
                     else:
                         update = True
 
                     if update:
-                        perc = round(current * 100 / total)
+                        perc = round(d['downloaded_bytes'] *
+                                     100 / d['total_bytes'])
                         client.edit_message_text(
-                            chat_id=message.chat.id, message_id=message.message_id, text=f"Downloading {title}\n\n{perc}%")
-                        last_edited[f"{message.chat.id}-{message.message_id}"] = datetime.datetime.now()
+                            chat_id=message.chat.id, message_id=msg.message_id, text=f"Downloading {d['info_dict']['title']}\n\n{perc}%")
+                        last_edited[f"{message.chat.id}-{msg.message_id}"] = datetime.datetime.now()
                 except Exception as e:
                     print(e)
-
+                    
         msg = client.send_message(message.chat.id, 'Downloading...')
         video_title = round(time.time() * 1000)
-        with yt_dlp.YoutubeDL({'format': format_id, 'outtmpl': f'outputs/{video_title}.%(ext)s', 'progress_hooks': [progress], 'postprocessors': [{  # Extract audio using ffmpeg
+        with yt_dlp.YoutubeDL({'format': format_id, 'outtmpl': f'outputs/{video_title}.%(ext)s', 'progress_hooks': [lambda d: progress(d, message, msg)], 'postprocessors': [{  # Extract audio using ffmpeg
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
         }] if audio else [], 'max_filesize': config.max_filesize}) as ydl:
