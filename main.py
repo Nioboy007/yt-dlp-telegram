@@ -6,6 +6,7 @@ import yt_dlp
 import re
 import os
 import time
+from pyrogram import enums
 
 bot = Client("my_bot", api_id=config.api_id, api_hash=config.api_hash, bot_token=config.token)
 last_edited = {}
@@ -26,7 +27,7 @@ def youtube_url_validation(url):
 
 @bot.on_message(filters.command(['start', 'help']))
 def test(client, message):
-    client.send_message(message.chat.id, "*Send me a video link* and I'll download it for you, works with *YouTube*, *Twitter*, *TikTok*, *Reddit* and more.\n\n_Powered by_ [yt-dlp](https://github.com/yt-dlp/yt-dlp/)", parse_mode="markdown", disable_web_page_preview=True)
+    client.send_message(message.chat.id, "*Send me a video link* and I'll download it for you, works with *YouTube*, *Twitter*, *TikTok*, *Reddit* and more.\n\n_Powered by_ [yt-dlp](https://github.com/yt-dlp/yt-dlp/)", parse_mode=enums.ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
 def download_video(client, message, url, audio=False, format_id="mp4"):
@@ -75,7 +76,7 @@ def download_video(client, message, url, audio=False, format_id="mp4"):
                     client.delete_messages(message.chat.id, message.message_id)
                 except Exception as e:
                     client.edit_message_text(
-                        chat_id=message.chat.id, message_id=message.message_id, text=f"Couldn't send file, make sure it's supported by Telegram and it doesn't exceed *{round(config.max_filesize / 1000000)}MB*", parse_mode="markdown")
+                        chat_id=message.chat.id, message_id=message.message_id, text=f"Couldn't send file, make sure it's supported by Telegram and it doesn't exceed *{round(config.max_filesize / 1000000)}MB*", parse_mode=enums.ParseMode.MARKDOWN)
                     for file in info['requested_downloads']:
                         os.remove(file['filepath'])
                 else:
@@ -87,7 +88,7 @@ def download_video(client, message, url, audio=False, format_id="mp4"):
                         'Invalid URL', message.chat.id, message.message_id)
                 else:
                     client.edit_message_text(
-                        f"There was an error downloading your video, make sure it doesn't exceed *{round(config.max_filesize / 1000000)}MB*", message.chat.id, message.message_id, parse_mode="markdown")
+                        f"There was an error downloading your video, make sure it doesn't exceed *{round(config.max_filesize / 1000000)}MB*", message.chat.id, message.message_id, parse_mode=enums.ParseMode.MARKDOWN)
                 for file in os.listdir('outputs'):
                     if file.startswith(str(video_title)):
                         os.remove(f'outputs/{file}')
