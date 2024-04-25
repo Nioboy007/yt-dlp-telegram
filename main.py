@@ -66,20 +66,19 @@ def download_video(client, message, url, audio=False, format_id="mp4"):
         }] if audio else [], 'max_filesize': config.max_filesize}) as ydl:
             info = ydl.extract_info(url, download=True)
             try:
-                    if audio:
-                        client.send_audio(message.chat.id, f'outputs/{video_title}.mp3', reply_to_message_id=message.id)
-
-                    else:
-                        client.send_video(message.chat.id, f'outputs/{video_title}.mp4', reply_to_message_id=message.id)
-                    client.delete_messages(message.chat.id, message.id)
-                except Exception as e:
-                    client.edit_message_text(
-                        chat_id=message.chat.id, message_id=message.id, text=f"Couldn't send file, make sure it's supported by Telegram and it doesn't exceed *{round(config.max_filesize / 1000000)}MB*", parse_mode=enums.ParseMode.MARKDOWN)
-                    for file in info['requested_downloads']:
-                        os.remove(file['filepath'])
+                if audio:
+                    client.send_audio(message.chat.id, f'outputs/{video_title}.mp3', reply_to_message_id=message.id)
                 else:
-                    for file in info['requested_downloads']:
-                        os.remove(file['filepath'])
+                    client.send_video(message.chat.id, f'outputs/{video_title}.mp4', reply_to_message_id=message.id)
+                client.delete_messages(message.chat.id, message.id)
+            except Exception as e:
+                client.edit_message_text(
+                    chat_id=message.chat.id, message_id=message.id, text=f"Couldn't send file, make sure it's supported by Telegram and it doesn't exceed *{round(config.max_filesize / 1000000)}MB*", parse_mode=enums.ParseMode.MARKDOWN)
+                for file in info['requested_downloads']:
+                    os.remove(file['filepath'])
+            else:
+                for file in info['requested_downloads']:
+                    os.remove(file['filepath'])
             except Exception as e:
                 if isinstance(e, yt_dlp.utils.DownloadError):
                     client.edit_message_text(
@@ -87,13 +86,11 @@ def download_video(client, message, url, audio=False, format_id="mp4"):
                 else:
                     client.edit_message_text(
                         f"There was an error downloading your video, make sure it doesn't exceed *{round(config.max_filesize / 1000000)}MB*", message.chat.id, message.id, parse_mode=enums.ParseMode.MARKDOWN)
-                for file in os.listdir('outputs'):
-                    if file.startswith(str(video_title)):
-                        os.remove(f'outputs/{file}')
-                else:
-                    client.send_message(message.chat.id, 'Invalid URL')
-
-
+                    for file in os.listdir('outputs'):
+                        if file.startswith(str(video_title)):
+                            os.remove(f'outputs/{file}')
+                    else:
+                        client.send_message(message.chat.id, 'Invalid URL')
 
 def log(client, message, text: str, media: str):
     if config.logs:
