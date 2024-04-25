@@ -79,7 +79,6 @@ def download_video(client, message, url, audio=False, format_id="mp4"):
             else:
                 for file in info['requested_downloads']:
                     os.remove(file['filepath'])
-            except Exception as e:
                 if isinstance(e, yt_dlp.utils.DownloadError):
                     client.edit_message_text(
                         'Invalid URL', message.chat.id, message.id)
