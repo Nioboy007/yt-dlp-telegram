@@ -31,7 +31,12 @@ def test(client, message):
 
 
 def download_video(client, message, url, audio=False, format_id="mp4"):
-    # Your existing code...
+    url_info = urlparse(url)
+    if url_info.scheme:
+        if url_info.netloc in ['www.youtube.com', 'youtu.be', 'youtube.com', 'youtu.be']:
+            if not youtube_url_validation(url):
+                client.send_message(message.chat.id, 'Invalid URL')
+                return
     
         def progress(d, message, msg):  # Add message and msg as arguments
             if d['status'] == 'downloading':
