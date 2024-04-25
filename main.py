@@ -94,6 +94,7 @@ def download_video(client, message, url, audio=False, format_id="mp4"):
                     client.send_message(message.chat.id, 'Invalid URL')
 
 
+
 def log(client, message, text: str, media: str):
     if config.logs:
         if message.chat.type == 'private':
