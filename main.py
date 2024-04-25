@@ -88,8 +88,8 @@ def download_video(client, message, url, audio=False, format_id="mp4"):
                 for file in os.listdir('outputs'):
                     if file.startswith(str(video_title)):
                         os.remove(f'outputs/{file}')
-    else: 
-        client.send_message(message.chat.id, 'Invalid URL')
+                else:
+                    client.send_message(message.chat.id, 'Invalid URL')
 
 
 def log(client, message, text: str, media: str):
