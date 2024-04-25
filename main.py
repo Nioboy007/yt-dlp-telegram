@@ -27,7 +27,7 @@ def youtube_url_validation(url):
 
 @bot.on_message(filters.command(['start', 'help']))
 def test(client, message):
-    client.send_message(message.chat.id, "*Send me a video link* and I'll download it for you, works with *YouTube*, *Twitter*, *TikTok*, *Reddit* and more.\n\n_Powered by_ [yt-dlp](https://github.com/yt-dlp/yt-dlp/)", parse_mode=enums.ParseMode.MARKDOWN, disable_web_page_preview=True)
+    client.send_message(message.chat.id, "*Send me a video link* and I'll download it for you, works with **YouTube**, *Twitter*, *TikTok*, *Reddit* and more.\n\n_Powered by_ [yt-dlp](https://github.com/yt-dlp/yt-dlp/)", parse_mode=enums.ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 
 def download_video(client, message, url, audio=False, format_id="mp4"):
@@ -123,7 +123,7 @@ def download_command(client, message):
     text = get_text(message)
     if not text:
         client.send_message(
-            message.chat.id, 'Invalid usage, use `/download url`', parse_mode="markdown")
+            message.chat.id, 'Invalid usage, use `/download url`', parse_mode=enums.ParseMode.MARKDOWN)
         return
 
     log(client, message, text, 'video')
@@ -135,7 +135,7 @@ def download_audio_command(client, message):
     text = get_text(message)
     if not text:
         client.send_message(
-            message.chat.id, 'Invalid usage, use `/audio url`', parse_mode="markdown")
+            message.chat.id, 'Invalid usage, use `/audio url`', parse_mode=enums.ParseMode.MARKDOWN)
         return
 
     log(client, message, text, 'audio')
@@ -147,7 +147,7 @@ def custom(client, message):
     text = get_text(message)
     if not text:
         client.send_message(
-            message.chat.id, 'Invalid usage, use `/custom url`', parse_mode="markdown")
+            message.chat.id, 'Invalid usage, use `/custom url`', parse_mode=enums.ParseMode.MARKDOWN)
         return
 
     msg = client.send_message(message.chat.id, 'Getting formats...')
