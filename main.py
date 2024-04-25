@@ -62,7 +62,7 @@ def download_video(client, message, url, audio=False, format_id="mp4"):
             info = ydl.extract_info(url, download=True)
             try:
                 client.edit_message_text(
-                    chat_id=message.chat.id, message_id=message.id, text='Sending file to Telegram...')
+                    chat_id=message.chat.id, message_id=message.message_id, text='Sending file to Telegram...')
                 try:
                     if audio:
                         client.send_audio(message.chat.id, f'outputs/{video_title}.mp3', reply_to_message_id=message.id)
